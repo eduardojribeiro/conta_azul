@@ -4,7 +4,8 @@
   "description": "Desafio Conta Azul",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "run": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,8 @@
   },
   "homepage": "https://github.com/eduardojribeiro/conta_azul#readme",
   "devDependencies": {
-    "less": "^2.7.3"
+    "connect": "^3.6.5",
+    "less": "^2.7.3",
+    "serve-static": "^1.13.1"
   }
 }
