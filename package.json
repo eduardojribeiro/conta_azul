@@ -1,0 +1,22 @@
+{
+  "name": "conta_azul",
+  "version": "1.0.0",
+  "description": "Desafio Conta Azul",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eduardojribeiro/conta_azul.git"
+  },
+  "author": "Eduardo de Jesus Ribeiro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eduardojribeiro/conta_azul/issues"
+  },
+  "homepage": "https://github.com/eduardojribeiro/conta_azul#readme",
+  "devDependencies": {
+    "less": "^2.7.3"
+  }
+}
