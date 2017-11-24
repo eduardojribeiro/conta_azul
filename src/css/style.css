@@ -13,7 +13,7 @@ body{
 header{
 	width: 100%;
 	background-color: #2687E9;
-	padding: 10px;
+	padding: 15px 0;
 }
 
 .container-logo, main.container, nav.menu{
@@ -31,10 +31,11 @@ section.buttons{
 }
 
 section.buttons .btn{
-	padding: 10px 25px;
+	padding: 12px 25px;
 	color: white;
-	border-radius: 4px;
+	border-radius: 5px;
 	border: none;
+	margin-right: 15px;
 }
 
 section.buttons .btn.btn-green{
@@ -47,24 +48,81 @@ section.buttons .btn.btn-red{
 
 section.search{
 	float: right;
-	border: 1px solid blue;
 }
 
-.btn-search{
-	background-image: url("../images/icon_seach.png");
-	background-color: #F1F4F9;
+section.search button{
+	background-image: url(../images/icon_seach.png);
+	background-repeat: no-repeat;
+	background-position: 12px 12px;
+	border: 1px solid #c9d3dd;
+	background-color: #f1f4f9;
+	border-radius: 0 5px 5px 0;
+	margin-left: -1px;
+	padding: 18px 19px;
+	outline: none;
+}
+
+section.search .btn-search{
+	background-image: url(../images/icon_seach.png);
+	background-repeat: no-repeat;
+	background-position: 10px;
+}
+
+section.search input{
+	padding: 10px 15px;
+	border: 1px solid #C9D3DD;
+	border-radius: 5px 0 0 5px;
+	float: left;
+	outline: none;
 }
 
 table{
 	width: 100%;
 	background-color: white;
-}
-
-table tr{
-	outline: 1px solid #C9D3DD;
+	border: 1px solid #C9D3DD;
+	border-radius: 5px;
 }
 
 table tr td{
-	padding: 10px;
+	padding: 14px 8px;
 	margin: 0;
+	border-bottom: 1px solid #C9D3DD;
+}
+
+table tr:last-child td{
+	border: none;
+}
+
+table tr:first-child td{
+	border-bottom: 1px solid #C9D3DD;
+}
+
+table thead tr td{
+	font-weight: bold;
+	background-color: #F8FAFC;
+	padding: 8px;
+}
+
+table thead tr:first-child td:first-child{
+	border-radius: 5px 0 0 0;
+}
+
+table thead tr:first-child td:last-child{
+	border-radius: 0 5px 0 0;
+}
+
+table tr td:first-child{
+	width: 35px;
+}
+
+table tr td:first-child input[type=checkbox]{
+	margin-left: 10px;
+}
+
+table tbody tr:hover{ 
+	outline: 1px solid #8BC8F6;
+	background-color: #D8E9FB;
+}
+table tbody tr:hover td{
+	border-color: #D8E9FB;
 }
