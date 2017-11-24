@@ -16,13 +16,12 @@ require.config
 		underscore: '../js/libs/underscore-min'
 		backbone: '../js/libs/backbone-min'
 		text: '../js/libs/text'
+		templates: '../templates'
 
 require [
 	'backbone'
-	'views/AppView'
 	'routers/router'
-], (Backbone, AppView, Router) ->
+], (Backbone, Router) ->
 
 	router = new Router()
 	Backbone.history.start()
-	appView = new AppView()

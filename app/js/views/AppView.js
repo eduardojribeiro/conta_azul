@@ -3,7 +3,8 @@
     hasProp = {}.hasOwnProperty;
 
   define(['jquery', 'backbone'], function($, Backbone) {
-    var AppView;
+    var AppView, TEMPLATE;
+    TEMPLATE = "<header>\n	<div class=\"container-logo\">\n		<!-- <a href=\"#\"><img src=\"images/logo.png\" /></a> -->\n	</div>\n</header>\n<main></main>";
     return AppView = (function(superClass) {
       extend(AppView, superClass);
 
@@ -11,14 +12,10 @@
         return AppView.__super__.constructor.apply(this, arguments);
       }
 
-      AppView.prototype.el = 'main';
-
-      AppView.prototype.initialize = function() {
-        return this.render();
-      };
+      AppView.prototype.el = ".page";
 
       AppView.prototype.render = function() {
-        return this.$el.html("Teste");
+        return this.$el.html(_.template(TEMPLATE));
       };
 
       return AppView;

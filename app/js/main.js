@@ -17,15 +17,15 @@
       jquery: '../js/libs/jquery',
       underscore: '../js/libs/underscore-min',
       backbone: '../js/libs/backbone-min',
-      text: '../js/libs/text'
+      text: '../js/libs/text',
+      templates: '../templates'
     }
   });
 
-  require(['backbone', 'views/AppView', 'routers/router'], function(Backbone, AppView, Router) {
-    var appView, router;
+  require(['backbone', 'routers/router'], function(Backbone, Router) {
+    var router;
     router = new Router();
-    Backbone.history.start();
-    return appView = new AppView();
+    return Backbone.history.start();
   });
 
 }).call(this);

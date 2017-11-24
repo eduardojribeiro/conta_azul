@@ -16,7 +16,7 @@ header{
 	padding: 15px 0;
 }
 
-.container-logo, main.container, nav.menu{
+.container-logo, .container, nav.menu{
 	width: 980px;
 	margin: 0 auto;
 }
@@ -62,7 +62,7 @@ section.search button{
 	outline: none;
 }
 
-section.search .btn-search{
+section.search .icon-search{
 	background-image: url(../images/icon_seach.png);
 	background-repeat: no-repeat;
 	background-position: 10px;
