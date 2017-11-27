@@ -12,8 +12,8 @@
       }
 
       Router.prototype.routes = {
-        '*actions': 'defaultAction',
-        'new-car/': 'newCar'
+        'newcar': 'newCar',
+        '*actions': 'defaultAction'
       };
 
       Router.prototype.initialize = function() {

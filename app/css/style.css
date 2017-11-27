@@ -128,3 +128,18 @@ table tbody tr:hover{
 table tbody tr:hover td{
 	border-color: #D8E9FB;
 }
+
+.container-logo {
+	display: none;
+}
+
+.newcar form{
+  display: inline-block;
+  width: 500px;
+  margin: 0 auto;
+}
+
+.newcar form input{
+	width: 250px;
+	padding: 8px;
+}

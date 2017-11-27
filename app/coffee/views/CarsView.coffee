@@ -8,8 +8,9 @@ define [
 ], ($, Backbone, Services, CarsTemplate, LineTemplate, TableTemplate) ->
 
 	class CarModel extends Backbone.Model
-		idAttribute: "placa"
+		idAttribute: "id"
 		defaults: ->
+			id: null
 			combustivel: ""
 			imagem: ""
 			marca: ""
@@ -21,37 +22,48 @@ define [
 	class CarsCollection extends Backbone.Collection
 		model: CarModel
 
-		findByText: (value) ->
-			console.log @constructor.name, "findByText", value
-
 	class TableView extends Backbone.View
 		template: _.template TableTemplate
 		tagName: "table"
+
+		keyword: ""
 
 		initialize: ->
 			@cars = new CarsCollection()
 			@listenTo @cars, "remove", @removeLineView, @
 
+		removeSelected: ->
+			@$("input:checked").each (i, input) =>
+				@removeItem $(input).attr('value')
+
 		removeItem: (id) ->
-			@cars.remove(id)
+			promise = Services.Cars.delete(data: id: id)
+			promise.done =>
+				@cars.remove(id)
 
 		removeLineView: (model) ->
 			model.get('view')?.remove()
 
-		findByText: ->
-			@cars.findByText(id)
+		findByText: (value) ->
+			@keyword = value
+			@render()
 
 		createLineView: (model) ->
 			return new LineView(model: model)
 
 		prepareToRender: (next, cancel) ->
-			promise = Services.Cars.get()
-			promise.done (dados) ->
-				next(dados.result);
+			unless @keyword
+				Services.Cars.get()
+					.done (data) ->
+						next(data.result)
+			else
+				Services.Cars.findByText(data: keyword: @keyword)
+					.done (data) ->
+						next(data.result)
 
 		render: ->
-			@prepareToRender (dados) =>
-				@cars.set dados
+			@prepareToRender (data) =>
+				@cars.set data
 				@$el.html @template()
 				@cars.each (model) =>
 					lineView = @createLineView(model)
@@ -90,15 +102,15 @@ define [
 			@tableView = new TableView()
 
 		clickNewCar: (event) ->
-			Backbone.history.navigate 'new-car'
+			Backbone.history.navigate 'newcar', trigger: true, history: true
 
 		clickDeleteCar: (event) ->
 			if window.confirm("Deseja realmente remover o veículo?")
 				id = $(event.target).closest('.line').data('id')
-				@tableView.removeItem(id)
+				@tableView.removeSelected()
 
 		clickSearch: (event) ->
-			value = @$('.input-search').text()
+			value = @$('.input-search').val()
 			@tableView.findByText(value)
 
 		render: ->

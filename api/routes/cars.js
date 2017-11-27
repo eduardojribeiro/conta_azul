@@ -8,7 +8,17 @@ router.get('/', function (req, res) {
 	var qtd = 5;
 	var query = "SELECT * FROM CARS ORDER BY ID DESC LIMIT 5 OFFSET " + (page * qtd);
 	sql.run(query, function(result){
-		res.json({result: result});
+		if (result.length > 0){
+			sql.run("SELECT COUNT(*) as TOTAL FROM CARS", function (itens) {
+				var total = itens[0].TOTAL / 5
+				res.json({
+					result: result,
+					pages: total % 1 ? parseInt(total) + 1 : total
+				});
+			});
+		}else{
+			res.status(500).send({ error: "Nenhum resultado foi encontrado!" })
+		}
 	});
 });
 

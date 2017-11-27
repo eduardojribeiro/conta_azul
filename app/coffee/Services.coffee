@@ -3,8 +3,9 @@ define ->
 	class XHR 
 		url: null
 		send: (params = {url: "", data: {}}) ->
+			url = params.url or @url
 			$.ajax
-				url: @url,
+				url: url,
 				data: params.data,
 				context: document.body
 				dataType: 'json'
@@ -31,8 +32,9 @@ define ->
 	class Cars extends Services
 		url: "http://localhost:3000/api"
 
-		findByText: ->
-			promise = @send(params)
+		findByText: (params) ->
+			params.url = @url + "/find"
+			promise = @get(params)
 
 	return
 		Cars: new Cars

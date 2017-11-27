@@ -11,10 +11,11 @@
         return CarModel.__super__.constructor.apply(this, arguments);
       }
 
-      CarModel.prototype.idAttribute = "placa";
+      CarModel.prototype.idAttribute = "id";
 
       CarModel.prototype.defaults = function() {
         return {
+          id: null,
           combustivel: "",
           imagem: "",
           marca: "",
@@ -37,10 +38,6 @@
 
       CarsCollection.prototype.model = CarModel;
 
-      CarsCollection.prototype.findByText = function(value) {
-        return console.log(this.constructor.name, "findByText", value);
-      };
-
       return CarsCollection;
 
     })(Backbone.Collection);
@@ -55,13 +52,33 @@
 
       TableView.prototype.tagName = "table";
 
+      TableView.prototype.keyword = "";
+
       TableView.prototype.initialize = function() {
         this.cars = new CarsCollection();
         return this.listenTo(this.cars, "remove", this.removeLineView, this);
       };
 
+      TableView.prototype.removeSelected = function() {
+        return this.$("input:checked").each((function(_this) {
+          return function(i, input) {
+            return _this.removeItem($(input).attr('value'));
+          };
+        })(this));
+      };
+
       TableView.prototype.removeItem = function(id) {
-        return this.cars.remove(id);
+        var promise;
+        promise = Services.Cars["delete"]({
+          data: {
+            id: id
+          }
+        });
+        return promise.done((function(_this) {
+          return function() {
+            return _this.cars.remove(id);
+          };
+        })(this));
       };
 
       TableView.prototype.removeLineView = function(model) {
@@ -69,8 +86,9 @@
         return (ref = model.get('view')) != null ? ref.remove() : void 0;
       };
 
-      TableView.prototype.findByText = function() {
-        return this.cars.findByText(id);
+      TableView.prototype.findByText = function(value) {
+        this.keyword = value;
+        return this.render();
       };
 
       TableView.prototype.createLineView = function(model) {
@@ -80,17 +98,25 @@
       };
 
       TableView.prototype.prepareToRender = function(next, cancel) {
-        var promise;
-        promise = Services.Cars.get();
-        return promise.done(function(dados) {
-          return next(dados.result);
-        });
+        if (!this.keyword) {
+          return Services.Cars.get().done(function(data) {
+            return next(data.result);
+          });
+        } else {
+          return Services.Cars.findByText({
+            data: {
+              keyword: this.keyword
+            }
+          }).done(function(data) {
+            return next(data.result);
+          });
+        }
       };
 
       TableView.prototype.render = function() {
         this.prepareToRender((function(_this) {
-          return function(dados) {
-            _this.cars.set(dados);
+          return function(data) {
+            _this.cars.set(data);
             _this.$el.html(_this.template());
             return _this.cars.each(function(model) {
               var lineView;
@@ -161,20 +187,23 @@
       };
 
       CarsView.prototype.clickNewCar = function(event) {
-        return Backbone.history.navigate('new-car');
+        return Backbone.history.navigate('newcar', {
+          trigger: true,
+          history: true
+        });
       };
 
       CarsView.prototype.clickDeleteCar = function(event) {
         var id;
         if (window.confirm("Deseja realmente remover o veículo?")) {
           id = $(event.target).closest('.line').data('id');
-          return this.tableView.removeItem(id);
+          return this.tableView.removeSelected();
         }
       };
 
       CarsView.prototype.clickSearch = function(event) {
         var value;
-        value = this.$('.input-search').text();
+        value = this.$('.input-search').val();
         return this.tableView.findByText(value);
       };
 

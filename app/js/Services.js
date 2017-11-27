@@ -10,14 +10,16 @@
       XHR.prototype.url = null;
 
       XHR.prototype.send = function(params) {
+        var url;
         if (params == null) {
           params = {
             url: "",
             data: {}
           };
         }
+        url = params.url || this.url;
         return $.ajax({
-          url: this.url,
+          url: url,
           data: params.data,
           context: document.body,
           dataType: 'json',
@@ -91,9 +93,10 @@
 
       Cars.prototype.url = "http://localhost:3000/api";
 
-      Cars.prototype.findByText = function() {
+      Cars.prototype.findByText = function(params) {
         var promise;
-        return promise = this.send(params);
+        params.url = this.url + "/find";
+        return promise = this.get(params);
       };
 
       return Cars;
