@@ -4,8 +4,20 @@
 		<button type="button" class='btn btn-red delete-car'>Excluir Carro</button>
 	</section>
 	<section class='search'>
-		<input type="text" name="input" class='input-search' placeholder="Pesquisar" />
-		<button class="btn-search"><i class='icon-search'></i></button>
+		<form class='form-search'>
+			<input type="text" name="input" class='input-search' placeholder="Pesquisar" />
+			<button class="btn-search" type="submit"><i class='icon-search'></i></button>			
+		</form>
 	</section>
 </nav>
 <div class="container"></div>
+
+<br clear="all" />
+	
+<div class='pages'>
+
+	<% for(var i = 0; i <= page; i++){ %>
+		<a class='page'>i</a>
+	<% } %>
+
+</div>

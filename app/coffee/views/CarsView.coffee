@@ -27,6 +27,7 @@ define [
 		tagName: "table"
 
 		keyword: ""
+		page: 0
 
 		initialize: ->
 			@cars = new CarsCollection()
@@ -48,12 +49,16 @@ define [
 			@keyword = value
 			@render()
 
+		goToPage: (page) ->
+			@page = page - 1
+			@render()
+
 		createLineView: (model) ->
 			return new LineView(model: model)
 
 		prepareToRender: (next, cancel) ->
 			unless @keyword
-				Services.Cars.get()
+				Services.Cars.get(data: page: @page)
 					.done (data) ->
 						next(data.result)
 			else
@@ -96,7 +101,8 @@ define [
 		events:
 			"click .new-car": "clickNewCar"
 			"click .delete-car": "clickDeleteCar"
-			"click .btn-search": "clickSearch"
+			"submit .form-search": "submitSearch"
+			"click .page": "goToPage"
 
 		initialize: ->
 			@tableView = new TableView()
@@ -108,11 +114,14 @@ define [
 			if window.confirm("Deseja realmente remover o veículo?")
 				id = $(event.target).closest('.line').data('id')
 				@tableView.removeSelected()
+		
+		submitSearch: ->
+			@tableView.findByText(@$('.input-search').val())
+			return false
 
-		clickSearch: (event) ->
-			value = @$('.input-search').val()
-			@tableView.findByText(value)
-
+		goToPage: (event) ->
+			@tableView.goToPage($(event.target).text())
+			
 		render: ->
 			@$el.html @template()
 			@$(".container").html @tableView.render().$el

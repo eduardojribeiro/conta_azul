@@ -54,6 +54,8 @@
 
       TableView.prototype.keyword = "";
 
+      TableView.prototype.page = 0;
+
       TableView.prototype.initialize = function() {
         this.cars = new CarsCollection();
         return this.listenTo(this.cars, "remove", this.removeLineView, this);
@@ -91,6 +93,11 @@
         return this.render();
       };
 
+      TableView.prototype.goToPage = function(page) {
+        this.page = page - 1;
+        return this.render();
+      };
+
       TableView.prototype.createLineView = function(model) {
         return new LineView({
           model: model
@@ -99,7 +106,11 @@
 
       TableView.prototype.prepareToRender = function(next, cancel) {
         if (!this.keyword) {
-          return Services.Cars.get().done(function(data) {
+          return Services.Cars.get({
+            data: {
+              page: this.page
+            }
+          }).done(function(data) {
             return next(data.result);
           });
         } else {
@@ -179,7 +190,8 @@
       CarsView.prototype.events = {
         "click .new-car": "clickNewCar",
         "click .delete-car": "clickDeleteCar",
-        "click .btn-search": "clickSearch"
+        "submit .form-search": "submitSearch",
+        "click .page": "goToPage"
       };
 
       CarsView.prototype.initialize = function() {
@@ -201,10 +213,13 @@
         }
       };
 
-      CarsView.prototype.clickSearch = function(event) {
-        var value;
-        value = this.$('.input-search').val();
-        return this.tableView.findByText(value);
+      CarsView.prototype.submitSearch = function() {
+        this.tableView.findByText(this.$('.input-search').val());
+        return false;
+      };
+
+      CarsView.prototype.goToPage = function(event) {
+        return this.tableView.goToPage($(event.target).text());
       };
 
       CarsView.prototype.render = function() {

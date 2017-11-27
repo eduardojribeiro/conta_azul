@@ -13,6 +13,7 @@
 
       Router.prototype.routes = {
         'newcar': 'newCar',
+        '/': 'defaultAction',
         '*actions': 'defaultAction'
       };
 

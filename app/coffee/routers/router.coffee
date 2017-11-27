@@ -7,6 +7,7 @@ define [
 	class Router extends Backbone.Router
 		routes: 
 			'newcar': 'newCar'
+			'/': 'defaultAction'
 			'*actions': 'defaultAction'
 		
 		initialize: ->

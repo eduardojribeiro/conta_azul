@@ -1,23 +1,24 @@
-<form type="post" multpart="formdata">
-	<div class="group">
-		<input type="text" name="placa" placeholder="Placa">
-	</div>
-	<div class="group">
-		<input type="text" name="marca" placeholder="Marca">
-	</div>
-	<div class="group">
-		<input type="text" name="modelo" placeholder="Modelo">
-	</div>
-	<div class="group">
-		<input type="text" name="combustivel" placeholder="Combustivel">
-	</div>
-	<div class="group">
-		<input type="text" name="valor" placeholder="Valor">
-	</div>
-
-	<section>
-		<button class="btn btn-green new-car" type="submit">Salvar</button>
-		<button class="btn btn-red delete-car" type="">Cancelar</button>
-	</section>
-
-</form>
+<div class='newcar'>
+	<h1>Novo Carro</h1>
+	<form type="post" multpart="formdata">
+		<div class="group">
+			<input type="text" name="placa" required="required" placeholder="Placa">
+		</div>
+		<div class="group">
+			<input type="text" name="marca" required="required" placeholder="Marca">
+		</div>
+		<div class="group">
+			<input type="text" name="modelo" required="required" placeholder="Modelo">
+		</div>
+		<div class="group">
+			<input type="text" name="combustivel" required="required" placeholder="Combustivel">
+		</div>
+		<div class="group">
+			<input type="text" name="valor" required="required" placeholder="Valor">
+		</div>
+		<section class="buttons">
+			<button class="btn btn-green" type="submit">Salvar</button>
+			<a class="btn btn-red cancel" type="button">Cancelar</a>
+		</section>
+	</form>
+</div>
