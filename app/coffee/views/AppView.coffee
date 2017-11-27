@@ -6,7 +6,7 @@ define [
 	TEMPLATE = """
 		<header>
 			<div class="container-logo">
-				<!-- <a href="#"><img src="images/logo.png" /></a> -->
+				<a href="#"><img src="images/logo.png" /></a>
 			</div>
 		</header>
 		<main></main>

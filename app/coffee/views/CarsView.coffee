@@ -1,10 +1,11 @@
 define [
 	'jquery'
 	'backbone'
+	'services'
 	'text!templates/CarsTemplate.html'
 	'text!templates/LineTemplate.html'
 	'text!templates/TableTemplate.html'
-], ($, Backbone, CarsTemplate, LineTemplate, TableTemplate) ->
+], ($, Backbone, Services, CarsTemplate, LineTemplate, TableTemplate) ->
 
 	class CarModel extends Backbone.Model
 		idAttribute: "placa"
@@ -28,8 +29,7 @@ define [
 		tagName: "table"
 
 		initialize: ->
-			@cars = new CarsCollection(carros)
-
+			@cars = new CarsCollection()
 			@listenTo @cars, "remove", @removeLineView, @
 
 		removeItem: (id) ->
@@ -44,12 +44,19 @@ define [
 		createLineView: (model) ->
 			return new LineView(model: model)
 
+		prepareToRender: (next, cancel) ->
+			promise = Services.Cars.get()
+			promise.done (dados) ->
+				next(dados.result);
+
 		render: ->
-			@$el.html @template()
-			@cars.each (model) =>
-				lineView = @createLineView(model)
-				model.set "view", lineView
-				@$('tbody').append lineView.render().$el
+			@prepareToRender (dados) =>
+				@cars.set dados
+				@$el.html @template()
+				@cars.each (model) =>
+					lineView = @createLineView(model)
+					model.set "view", lineView
+					@$('tbody').append lineView.render().$el
 			@
 
 

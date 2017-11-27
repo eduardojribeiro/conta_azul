@@ -81,6 +81,8 @@ table{
 	background-color: white;
 	border: 1px solid #C9D3DD;
 	border-radius: 5px;
+	border-spacing: 0;
+    border-collapse: collapse;
 }
 
 table tr td{

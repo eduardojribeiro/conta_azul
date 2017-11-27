@@ -13,39 +13,39 @@ db.close = function(){
 db.connect();
 
 sql = "CREATE TABLE CARS(";
-sql += "ID INTEGER PRIMARY KEY AUTOINCREMENT,";
-sql += " COMBUSTIVEL TEXT NOT NULL,";
-sql += " IMAGEM TEXT NOT NULL,";
-sql += " MARCA TEXT NOT NULL,";
-sql += " MODELO TEXT NOT NULL,";
-sql += " PLACA TEXT NOT NULL,";
-sql += " VALOR INTEGER NOT NULL";
+sql += "id INTEGER PRIMARY KEY AUTOINCREMENT,";
+sql += " combustivel TEXT NOT NULL,";
+sql += " imagem TEXT NOT NULL,";
+sql += " marca TEXT NOT NULL,";
+sql += " modelo TEXT NOT NULL,";
+sql += " placa TEXT NOT NULL,";
+sql += " valor INTEGER NOT NULL";
 sql += ");";
 
 var populate = function(){
 	sqlite.insert("CARS", {
-		COMBUSTIVEL : "Flex",
-		IMAGEM : null,
-		MARCA : "Volkswagem",
-		MODELO : "Gol",
-		PLACA : "FFF-5498",
-		VALOR : 20000
+		combustivel : "Flex",
+		imagem : null,
+		marca : "Volkswagem",
+		modelo : "Gol",
+		placa : "FFF-5498",
+		valor : 20000
 	});
 	sqlite.insert("CARS", {
-		COMBUSTIVEL : "Gasolina",
-		IMAGEM : null,
-		MARCA : "Volkswagem",
-		MODELO : "Fox",
-		PLACA : "FOX-4125",
-		VALOR : 20000
+		combustivel : "Gasolina",
+		imagem : null,
+		marca : "Volkswagem",
+		modelo : "Fox",
+		placa : "FOX-4125",
+		valor : 20000
 	});
 	sqlite.insert("CARS", {
-		COMBUSTIVEL : "Alcool",
-		IMAGEM : "http://carros.ig.com.br/fotos/2010/290_193/Fusca2_290_193.jpg",
-		MARCA : "Volkswagen",
-		MODELO : "Fusca",
-		PLACA : "PAI-4121",
-		VALOR : 20000
+		combustivel : "Alcool",
+		imagem : "http://carros.ig.com.br/fotos/2010/290_193/Fusca2_290_193.jpg",
+		marca : "Volkswagen",
+		modelo : "Fusca",
+		placa : "PAI-4121",
+		valor : 20000
 	});
 };
 

@@ -2,7 +2,7 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['jquery', 'backbone', 'views/AppView', 'views/CarsView'], function($, Backbone, AppView, CarsView) {
+  define(['jquery', 'backbone', 'views/AppView'], function($, Backbone, AppView, CarsView) {
     var Router;
     return Router = (function(superClass) {
       extend(Router, superClass);
@@ -12,7 +12,8 @@
       }
 
       Router.prototype.routes = {
-        '*actions': 'defaultAction'
+        '*actions': 'defaultAction',
+        'new-car/': 'newCar'
       };
 
       Router.prototype.initialize = function() {
@@ -21,10 +22,20 @@
         return appView.render();
       };
 
+      Router.prototype.newCar = function() {
+        return require(['views/NewCarView'], function(NewCarView) {
+          var newCarView;
+          newCarView = new NewCarView();
+          return $('main').html(newCarView.render().$el);
+        });
+      };
+
       Router.prototype.defaultAction = function() {
-        var carsView;
-        carsView = new CarsView();
-        return $('main').html(carsView.render().$el);
+        return require(['views/CarsView'], function(CarsView) {
+          var carsView;
+          carsView = new CarsView();
+          return $('main').html(carsView.render().$el);
+        });
       };
 
       return Router;

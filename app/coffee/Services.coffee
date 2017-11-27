@@ -1,12 +1,38 @@
-# define ->
-# 	class Services
+define ->
+
+	class XHR 
+		url: null
+		send: (params = {url: "", data: {}}) ->
+			$.ajax
+				url: @url,
+				data: params.data,
+				context: document.body
+				dataType: 'json'
+				type: params.type
+
+	class Services extends XHR
 		
-# 		get: (params = {url: "", data: {}}) ->
-# 			jqxhr = $.get(@url, params.data)
-# 			jqxhr.fail ->
-# 				alert "Falha ao comunicar com o sistema"
+		get: (params = {}) ->
+			params = _.extend params, type: "GET"
+			promise = @send(params)
 
-# 		put: ->
+		post: (params = {}) ->
+			params = _.extend params, type: "POST"
+			promise = @send(params)
 
-# 	class Cars extends Services
-# 		url: ''
+		put: (params = {}) ->
+			params = _.extend params, type: "PUT"
+			promise = @send(params)
+
+		delete: (params = {}) ->
+			params = _.extend params, type: "DELETE"
+			promise = @send(params)
+
+	class Cars extends Services
+		url: "http://localhost:3000/api"
+
+		findByText: ->
+			promise = @send(params)
+
+	return
+		Cars: new Cars

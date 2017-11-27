@@ -4,7 +4,7 @@
 
   define(['jquery', 'backbone'], function($, Backbone) {
     var AppView, TEMPLATE;
-    TEMPLATE = "<header>\n	<div class=\"container-logo\">\n		<!-- <a href=\"#\"><img src=\"images/logo.png\" /></a> -->\n	</div>\n</header>\n<main></main>";
+    TEMPLATE = "<header>\n	<div class=\"container-logo\">\n		<a href=\"#\"><img src=\"images/logo.png\" /></a>\n	</div>\n</header>\n<main></main>";
     return AppView = (function(superClass) {
       extend(AppView, superClass);
 

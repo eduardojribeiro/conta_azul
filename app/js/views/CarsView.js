@@ -2,32 +2,8 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['jquery', 'backbone', 'text!templates/CarsTemplate.html', 'text!templates/LineTemplate.html', 'text!templates/TableTemplate.html'], function($, Backbone, CarsTemplate, LineTemplate, TableTemplate) {
-    var CarModel, CarsCollection, CarsView, LineView, TableView, carros;
-    carros = [
-      {
-        combustivel: "Flex",
-        imagem: null,
-        marca: "Volkswagem",
-        modelo: "Gol",
-        placa: "FFF-5498",
-        valor: 20000
-      }, {
-        combustivel: "Gasolina",
-        imagem: null,
-        marca: "Volkswagem",
-        modelo: "Fox",
-        placa: "FOX-4125",
-        valor: 20000
-      }, {
-        combustivel: "Alcool",
-        imagem: "http://carros.ig.com.br/fotos/2010/290_193/Fusca2_290_193.jpg",
-        marca: "Volkswagen",
-        modelo: "Fusca",
-        placa: "PAI-4121",
-        valor: 20000
-      }
-    ];
+  define(['jquery', 'backbone', 'services', 'text!templates/CarsTemplate.html', 'text!templates/LineTemplate.html', 'text!templates/TableTemplate.html'], function($, Backbone, Services, CarsTemplate, LineTemplate, TableTemplate) {
+    var CarModel, CarsCollection, CarsView, LineView, TableView;
     CarModel = (function(superClass) {
       extend(CarModel, superClass);
 
@@ -80,7 +56,7 @@
       TableView.prototype.tagName = "table";
 
       TableView.prototype.initialize = function() {
-        this.cars = new CarsCollection(carros);
+        this.cars = new CarsCollection();
         return this.listenTo(this.cars, "remove", this.removeLineView, this);
       };
 
@@ -103,14 +79,25 @@
         });
       };
 
+      TableView.prototype.prepareToRender = function(next, cancel) {
+        var promise;
+        promise = Services.Cars.get();
+        return promise.done(function(dados) {
+          return next(dados.result);
+        });
+      };
+
       TableView.prototype.render = function() {
-        this.$el.html(this.template());
-        this.cars.each((function(_this) {
-          return function(model) {
-            var lineView;
-            lineView = _this.createLineView(model);
-            model.set("view", lineView);
-            return _this.$('tbody').append(lineView.render().$el);
+        this.prepareToRender((function(_this) {
+          return function(dados) {
+            _this.cars.set(dados);
+            _this.$el.html(_this.template());
+            return _this.cars.each(function(model) {
+              var lineView;
+              lineView = _this.createLineView(model);
+              model.set("view", lineView);
+              return _this.$('tbody').append(lineView.render().$el);
+            });
           };
         })(this));
         return this;
@@ -174,7 +161,7 @@
       };
 
       CarsView.prototype.clickNewCar = function(event) {
-        throw new Error("Recurso ainda não implementado!");
+        return Backbone.history.navigate('new-car');
       };
 
       CarsView.prototype.clickDeleteCar = function(event) {
