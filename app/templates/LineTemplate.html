@@ -2,6 +2,6 @@
 <td><%- placa %></td>
 <td><%- modelo %></td>
 <td><%- marca %></td>
-<td><%- imagem %> foto</td>
+<td><% if(imagem){ %><a href="<%- imagem %>" target="_blank">Imagem</a><% } %></td>
 <td><%- combustivel %></td>
 <td><%- valor %></td>

@@ -27,15 +27,19 @@ define [
 		tagName: "table"
 
 		keyword: ""
-		page: 0
+		currentPage: 0
+		pages: null
 
 		initialize: ->
 			@cars = new CarsCollection()
 			@listenTo @cars, "remove", @removeLineView, @
 
 		removeSelected: ->
-			@$("input:checked").each (i, input) =>
+			@$(".line input:checked").each (i, input) =>
 				@removeItem $(input).attr('value')
+
+		isSelectedItems: ->
+			return !!@$(".line input:checked").length
 
 		removeItem: (id) ->
 			promise = Services.Cars.delete(data: id: id)
@@ -44,13 +48,15 @@ define [
 
 		removeLineView: (model) ->
 			model.get('view')?.remove()
+			if @cars.isEmpty()
+				@render()
 
 		findByText: (value) ->
 			@keyword = value
 			@render()
 
-		goToPage: (page) ->
-			@page = page - 1
+		goToPage: (currentPage) ->
+			@currentPage = currentPage - 1
 			@render()
 
 		createLineView: (model) ->
@@ -58,24 +64,29 @@ define [
 
 		prepareToRender: (next, cancel) ->
 			unless @keyword
-				Services.Cars.get(data: page: @page)
+				Services.Cars.get(data: page: @currentPage)
 					.done (data) ->
-						next(data.result)
+						next(data)
 			else
 				Services.Cars.findByText(data: keyword: @keyword)
 					.done (data) ->
-						next(data.result)
+						next(data)
 
 		render: ->
 			@prepareToRender (data) =>
-				@cars.set data
-				@$el.html @template()
+				if(data.result.length > 0)
+					@pages = data.pages
+					@cars.set data.result
+					@$el.html @template()
+				else
+					@cars.reset()
+					@$el.html "<p class='empty'>Nenhum resultado encontrado!</p>"
+
 				@cars.each (model) =>
 					lineView = @createLineView(model)
 					model.set "view", lineView
 					@$('tbody').append lineView.render().$el
 			@
-
 
 	class LineView extends Backbone.View
 		tagName: "tr"
@@ -83,16 +94,57 @@ define [
 		template: _.template LineTemplate
 
 		events:
-			"checked": "checked"
+			"click": "toggleCheck"
 
 		attribute: ->
 			"data-id": @model.get('placa')
 
-		checked: ->
-			return throw new Error("Recurso ainda não implementado!")
+		toggleCheck: ->
+			@$('input').prop('checked', !@$('input').is(":checked"))
 
 		render: ->
 			@$el.html @template(@model.toJSON())
+			@
+
+	class PagesView extends Backbone.View
+		tagName: "ul"
+		className: "pages"
+		template: _.template """
+			<li><a class='arrow-left'></a></li>	
+			<% for(i = 1; i <= pages; ++i){ %>
+				<% if(i == (currentPage + 1)){ print("<li class='active'>"); }else{ print("<li>"); } %>
+					<a class='page'><%= i %></a>
+				</li>
+			<% } %>
+			<li><a class='arrow-right'></a></li>
+
+		"""
+		currentPage: null
+		pages: null
+
+		events: 
+			"click .page": "goToPage"
+			"click .arrow-left": "goToFirstPage"
+			"click .arrow-right": "goToLastPage"
+
+		definePages: (params) ->
+			@currentPage = params.currentPage
+			@pages = params.pages
+			@render()
+
+		goToFirstPage: ->
+			@trigger('goToPage', 0)
+
+		goToLastPage: ->
+			@trigger('goToPage', @pages)
+
+		goToPage: (event) ->
+			page = $(event.target).text()
+			@trigger('goToPage', page)
+
+		render: ->
+			if @pages > 1
+				@$el.html @template(pages: @pages, currentPage: @currentPage)
 			@
 
 	class CarsView extends Backbone.View
@@ -102,27 +154,35 @@ define [
 			"click .new-car": "clickNewCar"
 			"click .delete-car": "clickDeleteCar"
 			"submit .form-search": "submitSearch"
-			"click .page": "goToPage"
-
+		
 		initialize: ->
 			@tableView = new TableView()
+			@pagesView = new PagesView()
+
+			@tableView.cars.on "update", =>
+				currentPage = @tableView.currentPage
+				pages = @tableView.pages
+				@pagesView.definePages(currentPage: currentPage, pages: pages)
+
+			@pagesView.on "goToPage", (currentPage) =>
+				@tableView.goToPage(currentPage)
 
 		clickNewCar: (event) ->
 			Backbone.history.navigate 'newcar', trigger: true, history: true
 
 		clickDeleteCar: (event) ->
-			if window.confirm("Deseja realmente remover o veículo?")
-				id = $(event.target).closest('.line').data('id')
-				@tableView.removeSelected()
+			unless @tableView.isSelectedItems()
+				alert("Nenhum item foi selecionado!")
+			else
+				if window.confirm("Deseja realmente remover o veículo?")
+					@tableView.removeSelected()
 		
 		submitSearch: ->
 			@tableView.findByText(@$('.input-search').val())
 			return false
 
-		goToPage: (event) ->
-			@tableView.goToPage($(event.target).text())
-			
 		render: ->
 			@$el.html @template()
 			@$(".container").html @tableView.render().$el
+			@$('.pagination').html @pagesView.render().$el
 			@

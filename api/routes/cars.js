@@ -15,9 +15,10 @@ router.get('/', function (req, res) {
 					result: result,
 					pages: total % 1 ? parseInt(total) + 1 : total
 				});
+				db.close()
 			});
 		}else{
-			res.status(500).send({ error: "Nenhum resultado foi encontrado!" })
+			res.json({result: [], pages: 0});
 		}
 	});
 });

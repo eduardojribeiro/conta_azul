@@ -3,7 +3,7 @@
     hasProp = {}.hasOwnProperty;
 
   define(['jquery', 'backbone', 'services', 'text!templates/CarsTemplate.html', 'text!templates/LineTemplate.html', 'text!templates/TableTemplate.html'], function($, Backbone, Services, CarsTemplate, LineTemplate, TableTemplate) {
-    var CarModel, CarsCollection, CarsView, LineView, TableView;
+    var CarModel, CarsCollection, CarsView, LineView, PagesView, TableView;
     CarModel = (function(superClass) {
       extend(CarModel, superClass);
 
@@ -54,7 +54,9 @@
 
       TableView.prototype.keyword = "";
 
-      TableView.prototype.page = 0;
+      TableView.prototype.currentPage = 0;
+
+      TableView.prototype.pages = null;
 
       TableView.prototype.initialize = function() {
         this.cars = new CarsCollection();
@@ -62,11 +64,15 @@
       };
 
       TableView.prototype.removeSelected = function() {
-        return this.$("input:checked").each((function(_this) {
+        return this.$(".line input:checked").each((function(_this) {
           return function(i, input) {
             return _this.removeItem($(input).attr('value'));
           };
         })(this));
+      };
+
+      TableView.prototype.isSelectedItems = function() {
+        return !!this.$(".line input:checked").length;
       };
 
       TableView.prototype.removeItem = function(id) {
@@ -85,7 +91,12 @@
 
       TableView.prototype.removeLineView = function(model) {
         var ref;
-        return (ref = model.get('view')) != null ? ref.remove() : void 0;
+        if ((ref = model.get('view')) != null) {
+          ref.remove();
+        }
+        if (this.cars.isEmpty()) {
+          return this.render();
+        }
       };
 
       TableView.prototype.findByText = function(value) {
@@ -93,8 +104,8 @@
         return this.render();
       };
 
-      TableView.prototype.goToPage = function(page) {
-        this.page = page - 1;
+      TableView.prototype.goToPage = function(currentPage) {
+        this.currentPage = currentPage - 1;
         return this.render();
       };
 
@@ -108,10 +119,10 @@
         if (!this.keyword) {
           return Services.Cars.get({
             data: {
-              page: this.page
+              page: this.currentPage
             }
           }).done(function(data) {
-            return next(data.result);
+            return next(data);
           });
         } else {
           return Services.Cars.findByText({
@@ -119,7 +130,7 @@
               keyword: this.keyword
             }
           }).done(function(data) {
-            return next(data.result);
+            return next(data);
           });
         }
       };
@@ -127,8 +138,14 @@
       TableView.prototype.render = function() {
         this.prepareToRender((function(_this) {
           return function(data) {
-            _this.cars.set(data);
-            _this.$el.html(_this.template());
+            if (data.result.length > 0) {
+              _this.pages = data.pages;
+              _this.cars.set(data.result);
+              _this.$el.html(_this.template());
+            } else {
+              _this.cars.reset();
+              _this.$el.html("<p class='empty'>Nenhum resultado encontrado!</p>");
+            }
             return _this.cars.each(function(model) {
               var lineView;
               lineView = _this.createLineView(model);
@@ -157,7 +174,7 @@
       LineView.prototype.template = _.template(LineTemplate);
 
       LineView.prototype.events = {
-        "checked": "checked"
+        "click": "toggleCheck"
       };
 
       LineView.prototype.attribute = function() {
@@ -166,8 +183,8 @@
         };
       };
 
-      LineView.prototype.checked = function() {
-        throw new Error("Recurso ainda não implementado!");
+      LineView.prototype.toggleCheck = function() {
+        return this.$('input').prop('checked', !this.$('input').is(":checked"));
       };
 
       LineView.prototype.render = function() {
@@ -176,6 +193,62 @@
       };
 
       return LineView;
+
+    })(Backbone.View);
+    PagesView = (function(superClass) {
+      extend(PagesView, superClass);
+
+      function PagesView() {
+        return PagesView.__super__.constructor.apply(this, arguments);
+      }
+
+      PagesView.prototype.tagName = "ul";
+
+      PagesView.prototype.className = "pages";
+
+      PagesView.prototype.template = _.template("<li><a class='arrow-left'></a></li>	\n<% for(i = 1; i <= pages; ++i){ %>\n	<% if(i == (currentPage + 1)){ print(\"<li class='active'>\"); }else{ print(\"<li>\"); } %>\n		<a class='page'><%= i %></a>\n	</li>\n<% } %>\n<li><a class='arrow-right'></a></li>\n");
+
+      PagesView.prototype.currentPage = null;
+
+      PagesView.prototype.pages = null;
+
+      PagesView.prototype.events = {
+        "click .page": "goToPage",
+        "click .arrow-left": "goToFirstPage",
+        "click .arrow-right": "goToLastPage"
+      };
+
+      PagesView.prototype.definePages = function(params) {
+        this.currentPage = params.currentPage;
+        this.pages = params.pages;
+        return this.render();
+      };
+
+      PagesView.prototype.goToFirstPage = function() {
+        return this.trigger('goToPage', 0);
+      };
+
+      PagesView.prototype.goToLastPage = function() {
+        return this.trigger('goToPage', this.pages);
+      };
+
+      PagesView.prototype.goToPage = function(event) {
+        var page;
+        page = $(event.target).text();
+        return this.trigger('goToPage', page);
+      };
+
+      PagesView.prototype.render = function() {
+        if (this.pages > 1) {
+          this.$el.html(this.template({
+            pages: this.pages,
+            currentPage: this.currentPage
+          }));
+        }
+        return this;
+      };
+
+      return PagesView;
 
     })(Backbone.View);
     return CarsView = (function(superClass) {
@@ -190,12 +263,28 @@
       CarsView.prototype.events = {
         "click .new-car": "clickNewCar",
         "click .delete-car": "clickDeleteCar",
-        "submit .form-search": "submitSearch",
-        "click .page": "goToPage"
+        "submit .form-search": "submitSearch"
       };
 
       CarsView.prototype.initialize = function() {
-        return this.tableView = new TableView();
+        this.tableView = new TableView();
+        this.pagesView = new PagesView();
+        this.tableView.cars.on("update", (function(_this) {
+          return function() {
+            var currentPage, pages;
+            currentPage = _this.tableView.currentPage;
+            pages = _this.tableView.pages;
+            return _this.pagesView.definePages({
+              currentPage: currentPage,
+              pages: pages
+            });
+          };
+        })(this));
+        return this.pagesView.on("goToPage", (function(_this) {
+          return function(currentPage) {
+            return _this.tableView.goToPage(currentPage);
+          };
+        })(this));
       };
 
       CarsView.prototype.clickNewCar = function(event) {
@@ -206,10 +295,12 @@
       };
 
       CarsView.prototype.clickDeleteCar = function(event) {
-        var id;
-        if (window.confirm("Deseja realmente remover o veículo?")) {
-          id = $(event.target).closest('.line').data('id');
-          return this.tableView.removeSelected();
+        if (!this.tableView.isSelectedItems()) {
+          return alert("Nenhum item foi selecionado!");
+        } else {
+          if (window.confirm("Deseja realmente remover o veículo?")) {
+            return this.tableView.removeSelected();
+          }
         }
       };
 
@@ -218,13 +309,10 @@
         return false;
       };
 
-      CarsView.prototype.goToPage = function(event) {
-        return this.tableView.goToPage($(event.target).text());
-      };
-
       CarsView.prototype.render = function() {
         this.$el.html(this.template());
         this.$(".container").html(this.tableView.render().$el);
+        this.$('.pagination').html(this.pagesView.render().$el);
         return this;
       };
 
