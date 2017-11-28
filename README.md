@@ -5,7 +5,7 @@
 ## Install
 
 ```
-npm install clipboard --save
+npm install
 ```
 
 
@@ -13,5 +13,5 @@ npm install clipboard --save
 
 ```
 cd api && node server.js
-cd app && node ./app/web.js
+cd app && node web.js
 ```
