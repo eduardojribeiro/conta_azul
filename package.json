@@ -24,9 +24,16 @@
     "gulp-coffee": "^2.3.4",
     "gulp-watch": "^4.3.11",
     "less": "^2.7.3",
-    "serve-static": "^1.13.1"
+    "serve-static": "^1.13.1",
+    "gulp-cli": "^1.4.0"
   },
   "dependencies": {
-    "gulp-cli": "^1.4.0"
+    "body-parser": "^1.15.2",
+    "cookie-session": "^2.0.0-alpha.1",
+    "express": "^4.13.4",
+    "express-session": "^1.14.0",
+    "mssql": "^3.3.0",
+    "node-uuid": "^1.4.7",
+    "sqlite-sync": "^0.3.6"
   }
 }

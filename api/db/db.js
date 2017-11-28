@@ -12,7 +12,8 @@ db.close = function(){
 
 db.connect();
 
-sql = "CREATE TABLE CARS(";
+sql = "DROP TABLE CARS; ";
+sql += "CREATE TABLE CARS(";
 sql += "id INTEGER PRIMARY KEY AUTOINCREMENT,";
 sql += " combustivel TEXT NOT NULL,";
 sql += " imagem TEXT NOT NULL,";
