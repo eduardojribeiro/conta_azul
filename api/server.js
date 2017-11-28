@@ -1,7 +1,6 @@
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser')
-var utils = require('./utils/utils');
 var global = require('./global');
 var db = require('./db/db');
 var app = express();

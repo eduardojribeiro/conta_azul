@@ -33,6 +33,7 @@ router.get('/find', function (req, res) {
 		sql.run(query, function(result){
 			res.json({result: result});
 		});
+		db.close()
 	}else{
 		res.status(500).send({ error: "Nenhuma palavra chave foi informada!" })
 	}
@@ -44,6 +45,7 @@ router.delete('/', function(req, res){
 	var query = "DELETE FROM CARS WHERE ID = '" + id + "'";
 	sql.run(query, function(result){
 		res.json({result: result});
+		db.close()
 	});
 });
 
@@ -55,6 +57,7 @@ router.put('/', function(req, res){
 	query += params.marca + "', '" + params.modelo + "', '" + params.placa + "', '" + params.valor + "') ";
 	sql.run(query, function(result){
 		res.json({result: result});
+		db.close()
 	});
 });
 
